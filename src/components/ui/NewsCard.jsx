@@ -9,7 +9,7 @@ export default function NewsCard({ story, view = "grid" }) {
       className={`bg-white shadow-sm flex h-full ${isList ? "flex-row" : "flex-col"}`}
     >
       <div
-        className={`relative shrink-0 ${isList ? "w-44 min-h-40" : "w-full h-36"
+        className={`relative shrink-0 ${isList ? "w-2/5 min-h-48" : "w-full aspect-[16/9]"
           }`}
       >
         <Image
