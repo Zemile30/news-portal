@@ -1,8 +1,20 @@
-import { breakingNews } from "@/lib/mockData";
+"use client";
+
+import useNews from "@/hooks/useNews";
+import ArticleLink from "../ui/ArticleLink";
+
+function cleanTitle(title = "") {
+  return title.replace(/\s+-\s+[^-]+$/, "");
+}
 
 export default function BreakingBanner() {
+  const { data, loading, error } = useNews({ pageSize: 6 });
 
-  const items = [...breakingNews, ...breakingNews];
+  if (error) return null;
+
+  const headlines = data.filter((a) => a.title).slice(0, 6);
+
+  const items = [...headlines, ...headlines];
 
   return (
     <section
@@ -12,14 +24,23 @@ export default function BreakingBanner() {
       <span className="shrink-0 ml-3 sm:ml-[8%] mr-4 sm:mr-12 px-4 py-2 bg-white text-brand text-[11px] sm:text-xs font-medium rounded-sm relative z-10">
         Breaking News
       </span>
+
       <div className="flex-1 overflow-hidden">
-        <div className="flex w-max whitespace-nowrap animate-ticker">
-          {items.map((item, i) => (
-            <span key={i} className="text-sm pr-20">
-              {item.text}
-            </span>
-          ))}
-        </div>
+        {loading ? (
+          <div className="h-3 w-2/3 bg-white/30 rounded animate-pulse" />
+        ) : (
+          <div className="flex w-max whitespace-nowrap animate-ticker hover:[animation-play-state:paused]">
+            {items.map((item, i) => (
+              <ArticleLink
+                key={`${item.url}-${i}`}
+                article={item}
+                className="text-sm pr-20 hover:underline"
+              >
+                {cleanTitle(item.title)}
+              </ArticleLink>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

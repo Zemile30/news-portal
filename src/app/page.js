@@ -2,6 +2,7 @@ import Hero from "@/components/home/Hero";
 import BreakingBanner from "@/components/home/BreakingBanner";
 import LatestStories from "@/components/home/LatestStories";
 import SidePanel from "@/components/home/SidePanel";
+import EditorsPicks from "@/components/home/EditorsPicks";
 
 export default function Home() {
   return (
@@ -13,6 +14,8 @@ export default function Home() {
         <LatestStories />
         <SidePanel />
       </div>
+
+      <EditorsPicks />
     </main>
   );
 }

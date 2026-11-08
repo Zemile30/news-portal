@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { footerLinks } from "@/lib/mockData";
+import { footerLinks } from "@/lib/siteConfig";
 
 const socialImages = {
   rss: "/images/rss.png",

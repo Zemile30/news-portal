@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useBookmark } from "@/hooks/useBookmark"; // yol fərqlidirsə düzəlt
+import { useBookmark } from "@/hooks/useBookmark";
 
 function HeartIcon({ filled }) {
   return (
@@ -39,7 +39,16 @@ export default function StickyActions({ story }) {
   const { saved: bookmarked, toggle: toggleBookmark } = useBookmark(story.id);
   const [liked, setLiked] = useState(false);
 
-  const likeCount = story.likes + (liked ? 1 : 0);
+  // NewsAPI-də like/comment sayı yoxdur, ona görə undefined hallarını idarə edirik
+  const likeCount = (story.likes ?? 0) + (liked ? 1 : 0);
+
+  const handleShare = async () => {
+    const url = story.url || window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: story.title, url });
+      else await navigator.clipboard.writeText(url);
+    } catch {}
+  };
 
   return (
     <aside className="flex items-center gap-6 lg:sticky lg:top-24 lg:flex-col lg:items-start lg:gap-0 lg:self-start">
@@ -65,15 +74,19 @@ export default function StickyActions({ story }) {
           className="flex items-center gap-2 text-gray-700"
         >
           <HeartIcon filled={liked} />
-          <span className="text-[10px] text-gray-600">{likeCount}</span>
+          {likeCount > 0 && (
+            <span className="text-[10px] text-gray-600">{likeCount}</span>
+          )}
         </button>
 
-        <button type="button" aria-label="Comments" className="flex items-center gap-2 text-gray-700">
-          <CommentIcon />
-          <span className="text-[10px] text-gray-600">{story.comments}</span>
-        </button>
+        {story.comments !== undefined && (
+          <button type="button" aria-label="Comments" className="flex items-center gap-2 text-gray-700">
+            <CommentIcon />
+            <span className="text-[10px] text-gray-600">{story.comments}</span>
+          </button>
+        )}
 
-        <button type="button" aria-label="Share" className="text-gray-700">
+        <button type="button" aria-label="Share" onClick={handleShare} className="text-gray-700">
           <ShareIcon />
         </button>
 

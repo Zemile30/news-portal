@@ -1,32 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
+function initials(name = "") {
+  return (
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join("") || "?"
+  );
+}
 
 export default function AuthorCard({ author }) {
   const [following, setFollowing] = useState(false);
 
-  if (!author) return null;
+  if (!author?.name) return null;
 
   return (
     <section className="mt-6 flex flex-col gap-4 pb-10 sm:flex-row sm:items-start sm:justify-between">
       <div className="flex items-start gap-4">
-        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-gray-200">
-          <Image
-            src={author.avatar}
-            alt={author.name}
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
+        <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#0E1E32] text-sm font-medium text-white">
+          {author.avatar ? (
+            <img
+              src={author.avatar}
+              alt={author.name}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            initials(author.name)
+          )}
         </div>
 
         <div>
           <p className="text-[11px] text-gray-500">Author</p>
           <h4 className="text-sm font-medium text-gray-900">{author.name}</h4>
-          <p className="mt-2 max-w-sm text-[11px] leading-4 text-gray-600">
-            {author.bio}
-          </p>
+          {author.bio && (
+            <p className="mt-2 max-w-sm text-[11px] leading-4 text-gray-600">
+              {author.bio}
+            </p>
+          )}
         </div>
       </div>
 
@@ -37,7 +51,7 @@ export default function AuthorCard({ author }) {
         className="flex shrink-0 items-center gap-2 border border-red-200 bg-red-50 px-6 py-2 text-[10px] font-medium tracking-widest text-red-600 hover:bg-red-100"
       >
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M22 5.8c-.7.3-1.5.6-2.400.7.900-.5 1.500-1.300 1.800-2.300-.8.5-1.700.8-2.600 1a4.100 4.100 0 0 0-7 3.700A11.600 11.600 0 0 1 3.400 4.600a4.100 4.100 0 0 0 1.300 5.500c-.7 0-1.300-.2-1.900-.5 0 2 1.400 3.700 3.300 4.100-.6.2-1.200.2-1.800.1.500 1.600 2 2.800 3.800 2.800A8.200 8.200 0 0 1 2 18.300 11.600 11.600 0 0 0 8.300 20c7.500 0 11.700-6.300 11.700-11.700v-.5c.8-.6 1.500-1.300 2-2z" />
+          <path d="M22 5.8c-.7.3-1.5.6-2.4.7.9-.5 1.5-1.3 1.8-2.3-.8.5-1.7.8-2.6 1a4.1 4.1 0 0 0-7 3.7A11.6 11.6 0 0 1 3.4 4.6a4.1 4.1 0 0 0 1.3 5.5c-.7 0-1.3-.2-1.9-.5 0 2 1.4 3.7 3.3 4.1-.6.2-1.2.2-1.8.1.5 1.6 2 2.8 3.8 2.8A8.2 8.2 0 0 1 2 18.3 11.6 11.6 0 0 0 8.3 20c7.5 0 11.7-6.3 11.7-11.7v-.5c.8-.6 1.5-1.3 2-2z" />
         </svg>
         {following ? "FOLLOWING" : "FOLLOW"}
       </button>

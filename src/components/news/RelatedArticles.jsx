@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
+import ArticleLink from "@/components/ui/ArticleLink";
 import { useBookmark } from "@/hooks/useBookmark";
 
 function HeartIcon() {
@@ -37,41 +36,52 @@ function BookmarkMini({ id }) {
   );
 }
 
-function SideCard({ story }) {
+function CardImage({ story, className = "" }) {
   return (
-    <Link
-      href={`/news/${story.id}`}
-      className="block bg-white transition-shadow hover:shadow-md"
-    >
-      <div className="relative aspect-[4/3] w-full">
-        <Image
+    <div className={`relative aspect-[4/3] w-full bg-gray-200 ${className}`}>
+      {story.image && (
+        <img
           src={story.image}
           alt={story.title}
-          fill
-          sizes="256px"
-          className="object-cover"
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover"
         />
-      </div>
+      )}
+    </div>
+  );
+}
+
+function SideCard({ story }) {
+  return (
+    <ArticleLink
+      article={story.raw}
+      className="block bg-white transition-shadow hover:shadow-md"
+    >
+      <CardImage story={story} />
       <h4 className="p-4 font-serif text-[13px] font-bold leading-[1.35] text-gray-900">
         {story.title}
       </h4>
-    </Link>
+    </ArticleLink>
   );
 }
 
 export function RecommendedSidebar({ recommended = [], basedOnLike }) {
+  if (!recommended.length && !basedOnLike) return null;
+
   return (
     <aside className="space-y-8">
-      <section>
-        <h3 className="mb-3 text-xs font-semibold text-gray-900">
-          Recommended for you
-        </h3>
-        <div className="space-y-4">
-          {recommended.map((story) => (
-            <SideCard key={story.id} story={story} />
-          ))}
-        </div>
-      </section>
+      {recommended.length > 0 && (
+        <section>
+          <h3 className="mb-3 text-xs font-semibold text-gray-900">
+            Recommended for you
+          </h3>
+          <div className="space-y-4">
+            {recommended.map((story) => (
+              <SideCard key={story.id} story={story} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {basedOnLike && (
         <section>
@@ -98,29 +108,21 @@ export function RelatedTopics({ stories = [] }) {
             key={story.id}
             className="flex w-[200px] shrink-0 snap-start flex-col bg-white lg:w-auto lg:min-w-0 lg:flex-1"
           >
-            <Link href={`/news/${story.id}`} className="flex flex-1 flex-col">
-              <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src={story.image}
-                  alt={story.title}
-                  fill
-                  sizes="(min-width: 1024px) 220px, 200px"
-                  className="object-cover"
-                />
-              </div>
+            <ArticleLink article={story.raw} className="flex flex-1 flex-col">
+              <CardImage story={story} />
               <h4 className="flex-1 p-4 font-serif text-[13px] font-bold leading-[1.35] text-gray-900">
                 {story.title}
               </h4>
-            </Link>
+            </ArticleLink>
 
             <div className="mx-4 flex items-center justify-around border-t border-gray-200 py-3 text-[10px] text-gray-600">
               <span className="flex items-center gap-1.5">
                 <HeartIcon />
-                {story.likes}
+                {story.likes !== undefined && story.likes}
               </span>
               <span className="flex items-center gap-1.5">
                 <ShareIcon />
-                {story.shares}
+                {story.shares !== undefined && story.shares}
               </span>
               <BookmarkMini id={story.id} />
             </div>
