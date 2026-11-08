@@ -13,7 +13,7 @@ export async function GET(request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const type = searchParams.get("type") || "headlines"; 
+  const type = searchParams.get("type") || "headlines";
   const category = searchParams.get("category");
   const q = searchParams.get("q");
   const sortBy = searchParams.get("sortBy");
@@ -42,13 +42,28 @@ export async function GET(request) {
 
   try {
     const res = await fetch(`${BASE_URL}/${endpoint}?${params.toString()}`, {
-      headers: { "X-Api-Key": apiKey },
-      next: { revalidate: 300 }, 
+      headers: {
+        "X-Api-Key": apiKey,
+        "User-Agent": "news-portal/1.0",
+      },
+      next: { revalidate: 300 },
     });
 
-    const json = await res.json();
+    const text = await res.text();
+
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch {
+      console.error("NewsAPI JSON olmayan cavab qaytardı:", res.status, text.slice(0, 200));
+      return NextResponse.json(
+        { error: `NewsAPI cavabı oxunmadı (status ${res.status}).` },
+        { status: 502 }
+      );
+    }
 
     if (!res.ok || json.status === "error") {
+      console.error("NewsAPI xətası:", res.status, json.code, json.message);
       return NextResponse.json(
         { error: json.message || "NewsAPI xəta qaytardı." },
         { status: res.status || 502 }
@@ -59,7 +74,7 @@ export async function GET(request) {
       .filter((a) => a.title && a.title !== "[Removed]")
       .map((a) => ({
         ...a,
-        id: a.url, 
+        id: a.url,
         category: category || "general",
       }));
 
@@ -68,8 +83,9 @@ export async function GET(request) {
       totalResults: json.totalResults ?? articles.length,
     });
   } catch (err) {
+    console.error("NewsAPI sorğusu alınmadı:", err);
     return NextResponse.json(
-      { error: "Serverə qoşulmaq mümkün olmadı." },
+      { error: `Serverə qoşulmaq mümkün olmadı: ${err.message}` },
       { status: 502 }
     );
   }
