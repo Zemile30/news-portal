@@ -4,7 +4,7 @@ NewsAPI-dən real xəbərləri çəkən, Next.js ilə hazırlanmış xəbər por
 
 ## 🔗 Canlı Demo
 
-[https://VERCEL_LINKI.vercel.app](https://VERCEL_LINKI.vercel.app)
+[https://VERCEL_LINKI.vercel.app](https://news-portal-d61w.vercel.app)
 
 
 ## 🛠 Texnologiyalar
